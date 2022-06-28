@@ -1,0 +1,3 @@
+alias ctlplane-0='ssh heat-admin@controller-0.ctlplane'
+alias ctlplane-1='ssh heat-admin@controller-1.ctlplane'
+alias ctlplane-2='ssh heat-admin@controller-2.ctlplane'
