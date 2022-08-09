@@ -1,0 +1,78 @@
+#!/bin/sh
+
+#scipt to setup tempest environment in venv
+
+#install all required packages
+sudo yum install git gcc python-devel libffi-devel openssl-devel crudini python-tempestconf vim -y
+pip install virtualenv
+
+#install multiple pythons
+# sudo dnf install tox need to check.tox install all version of pythons.for production install only python3.https://developer.fedoraproject.org/tech/languages/python/multiple-pythons.html
+sudo dnf install python3.8 -y
+
+#create venv
+virtualenv -p py38 .venv2
+
+#source virtual env
+source .venv2/bin/activate
+
+
+#install pytest urllib3 setuptools
+pip install pytest urllib3
+pip install setuptools --upgrade
+
+#install tox
+git clone https://github.com/tox-dev/tox
+pip install tox/
+
+#install tempest
+git clone https://opendev.org/openstack/tempest.git
+pip install tempest/
+
+#install glance tempest plugins
+git clone https://opendev.org/openstack/glance-tempest-plugin.git
+pip install glance-tempest-plugin/
+
+#install python-tempest-conf
+git clone https://opendev.org/openinfra/python-tempestconf.git
+pip install python-tempestconf/
+
+#run command discover-tempest-config ,copy tempest.conf from python-tempestconf to tempest etc/ folder
+#need to check wich discover-tempest-config
+#need to source overcloudrc before running discover-tempest-config
+OVERCLOUDRCFILE=~/overcloudrc
+
+if [ -f "$OVERCLOURCFILE" ]
+then
+  source OVERCLOUDRCFILE
+  discover-tempest-config
+else
+  echo "overcloudrc file not found"
+  exit 0
+fi
+
+# copy tempest conf
+TEMPEST_CONF_FILE=python-tempestconf/etc/tempest.conf
+
+if [ -f "$TEMPEST_CONF_FILE" ]
+then
+  cp python-tempestconf/etc/tempest.conf tempest/etc/
+else
+  # shellcheck disable=SC2016
+  echo '$TEMPEST_CONF_FILE not found'
+  exit 0
+fi
+
+
+#checking - run basic test after installation tempest glance checks,openstack
+
+
+#verify glance plugins installed,which discover-tempest-config should be path to venv
+if tempest list-plugins | grep 'glance_tests*'
+then
+  echo 'glance plugin installed'
+fi
+
+#virsh snapshot create undercloud,controller,compute
+
+
