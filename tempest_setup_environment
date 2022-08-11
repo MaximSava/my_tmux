@@ -42,10 +42,12 @@ pip install python-tempestconf/
 #need to source overcloudrc before running discover-tempest-config
 OVERCLOUDRCFILE=~/overcloudrc
 
-if [ -f "$OVERCLOURCFILE" ]
+if [ -f "$OVERCLOUDRCFILE" ]
 then
-  source OVERCLOUDRCFILE
+  source $OVERCLOUDRCFILE
+  cd python-tempestconf
   discover-tempest-config
+  cd ..
 else
   echo "overcloudrc file not found"
   exit 0
